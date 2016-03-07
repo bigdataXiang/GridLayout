@@ -23,24 +23,14 @@ public class GridLayoutLines extends JFrame
 	
 	 public static void main(String[] args) throws IOException
 	 {
-		 
-		  
-		  GridLayoutLines frame = new GridLayoutLines(2,2,2,2,2,2);
+		  int[] rocos=DataGrid();
+		  int rows=rocos[0];
+		  int cols=rocos[1];
+		  GridLayoutLines frame = new GridLayoutLines(rows, cols,2,2,2,2,2,2);
 		  frame.setDefaultCloseOperation( EXIT_ON_CLOSE );
 		  frame.pack();
 		  frame.setLocationRelativeTo( null );
 		  frame.setVisible(true);
-	 }
-	 public GridLayoutLines(){
-		 int hgap=2;
-		 int vgap=2;
-		 int top=2;
-		 int left=2;
-		 int bottom=2;
-		 int right=2;
-		 int[] rocos=DataGrid();
-		 int rows=rocos[0];
-		 int cols=rocos[1];
 	 }
 	public static ArrayList<DataPoint> dataPoints=new ArrayList<DataPoint>();
 	public static ArrayList<Code> codes=new ArrayList<Code>();
@@ -85,15 +75,7 @@ public class GridLayoutLines extends JFrame
 	    
 		 
 	    }
-	private int rows;
-	private int cols;
-	private int hgap;
-	private int vgap;
-	private int top;
-	private int left;
-	private int bottom;
-	private int right;
-	 public int[] DataGrid(){
+	 public static int[] DataGrid(){
 		 dataPoints.clear();
 		 codes.clear(); 
 		 price.clear();
@@ -204,7 +186,7 @@ public class GridLayoutLines extends JFrame
 				  String address=dataPoints.get(k).address;
 				  pr.setAddress(address);
 				  String poi1=dataPoints.get(k).poi;
-				  pr.setAddress(poi1);
+				  pr.setPois(poi1);
 				  addPrice(pr,dataPoints.get(k).data,dataPoints.get(k).address,dataPoints.get(k).poi); 
 			  }
 			 }catch(ArrayIndexOutOfBoundsException e){
@@ -216,34 +198,34 @@ public class GridLayoutLines extends JFrame
 			 // System.out.println((int)price.get(ii).code+":"+price.get(ii).price_vet+price.get(ii).address_vet);
 			 // System.out.println(getGridValue(ii));
 		  
-			 if((int)price.get(ii).code==38139){
+			 if((int)price.get(ii).code==41403){//41403
 				 System.out.println(price.get(ii).pois.size()); 
 				 System.out.println(price.get(ii).price_vet.size()); 
 				 for(int a=0;a<price.get(ii).pois.size();a++){
-					 System.out.println(price.get(ii).pois.elementAt(a)); 
-					// FileTool.Dump(price.get(ii).pois.elementAt(a), "D:/Test/38139-poi.txt", "utf-8");
+					// System.out.println(price.get(ii).pois.elementAt(a)); 
+					 FileTool.Dump(price.get(ii).pois.elementAt(a), "D:/Test/41403-poi.txt", "utf-8");
 					 //System.out.println(price.get(ii).price_vet.elementAt(a));
 				 }
 				 for(int a=0;a<price.get(ii).price_vet.size();a++){
 					
-					// FileTool.Dump(price.get(ii).pois.elementAt(a), "D:/Test/38139-poi.txt", "utf-8");
-					 System.out.println(price.get(ii).price_vet.elementAt(a));
+					 //FileTool.Dump(price.get(ii).price_vet, "D:/Test/41403-price.txt", "utf-8");
+					// System.out.println(price.get(ii).price_vet.elementAt(a));
 				 }
 				  
-				 // FileTool.Dump((int)price.get(ii).code+":"+price.get(ii).price_vet, "D:/Test/38139.txt", "utf-8");
+				  FileTool.Dump((int)price.get(ii).code+":"+price.get(ii).price_vet, "D:/Test/41403-price.txt", "utf-8");
 			  }
 			  
 		  }
-		  //System.out.println((int)Math.ceil(4));
+		  System.out.println("OK!");
 		return roco;
 	 }
 	
-	 public void GridLayoutLine(GridLayoutLines gl)
+	 public GridLayoutLines(int rows,int cols,int hgap,int vgap,int top,int bottom,int right,int left)
 	 {
 		
 		  //构建网格框架
 		 
-		  JPanel grid = new JPanel( new GridLayout(gl.rows, gl.cols, gl.hgap, gl.vgap) );
+		  JPanel grid = new JPanel( new GridLayout(rows,cols,hgap,vgap) );
 		  grid.setBackground(Color.gray);//Color.gray
 		  /*
 		  JLabel l=new JLabel();
@@ -257,7 +239,7 @@ public class GridLayoutLines extends JFrame
 		  for (int m = 1; m <=rows*cols; m++)
 		  {
 			  //grid.setBackground(Color.gray);//Color.gray
-			  grid.setBorder( new MatteBorder(gl.top,gl.left, gl.bottom, gl.right, Color.BLACK) );
+			  grid.setBorder( new MatteBorder(top,left,bottom,right, Color.BLACK) );
 			  JLabel label = new JLabel();
 			  //label.setBackground(Color.gray);//Color.gray
 			  label.setBorder(BorderFactory.createLineBorder(Color.gray));
