@@ -11,6 +11,8 @@ import javax.swing.border.*;
 import com.svail.util.FileTool;
 import com.svail.util.Tool;
 
+import net.sf.json.JSONObject;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -22,15 +24,97 @@ public class GridLayoutLines extends JFrame {
 	public static Double PRICE;
 	public static String ADDRESS;
 
+	public static Double X_MAX = 2.0542041271351546E7;// 2.0542041271351546E7
+	public static Double X_MIN = 2.036373920422157E7;
+	public static Double Y_MAX = 4547353.496401368;
+	public static Double Y_MIN = 4368434.982578722;
+	public static int rows;
+	public static int cols;
+
 	public static void main(String[] args) throws IOException {
-		
+
 		setCode();
-		DataGrid("D:/Test/41403-poi.txt",20000);
-		GridLayoutLines frame = new GridLayoutLines(rows, cols, 2, 2, 2, 2, 2, 2);
-		frame.setDefaultCloseOperation(EXIT_ON_CLOSE);
-		frame.pack();
-		frame.setLocationRelativeTo(null);
-		frame.setVisible(true);
+
+		/*
+		 * DataGrid(
+		 * "D:\\Crawldata_BeiJing\\fang\\rentout\\0326\\fang_rentout0108\\fang_rentout0108_result.txt"
+		 * ,5000); GridLayoutLines frame = new GridLayoutLines(rows, cols, 2, 2,
+		 * 2, 2, 2, 2); frame.setDefaultCloseOperation(EXIT_ON_CLOSE);
+		 * frame.pack(); frame.setLocationRelativeTo(null);
+		 * frame.setVisible(true);
+		 */
+	}
+
+	/**
+	 * 给每个网格设置编码，从1开始编码
+	 */
+	public static void setCode() {
+		/*
+		 * 将北京的东北角和西南角的坐标转换成平面坐标 BLToGauss(117.500126,41.059244)
+		 * BLToGauss(115.417284,39.438283) BLToGauss: 2.0542041271351546E7
+		 * 4547353.496401368 BLToGauss: 2.036373920422157E7 4368434.982578722
+		 * 两点之间的距离是:252593.47127613405 178302.06712997705 178918.51382264588
+		 * 
+		 */
+
+		rows = (int) Math.ceil((X_MAX - X_MIN) / 1000);
+		cols = (int) Math.ceil((Y_MAX - Y_MIN) / 1000);
+
+		// System.out.print("d_x:"+rows+"\r\n"+"d_y:"+cols+"\r\n");
+
+		// 创建栅格编码
+		int mm = 1;
+		for (int rr = 1; rr <= rows; rr++) {
+			for (int cc = 1; cc <= cols; cc++) {
+				Code c = new Code();
+				c.setRow(rr);
+				c.setCol(cc);
+				c.setCode(mm);
+				mm++;
+				addCode(c);
+				// System.out.println(c.getCode(rr, cc));
+			}
+		}
+		// int k=200;
+		// for(int k=0;k<codes.size();k++){
+		// System.out.print("codes的第"+k+"个数是:"+codes.get(k).row+","+codes.get(k).col+","+codes.get(k).code+"\r\n");
+
+		// }
+
+	}
+
+	/**
+	 * 根据所写入的每条poi得知它所在的编码
+	 * 
+	 * @param file
+	 *            需要处理的文件
+	 * @param resolution
+	 *            设置的网格分辨率
+	 */
+	public static int setPoiCode(String poi, int resolution) {
+
+		int code;
+		JSONObject jsonObject = JSONObject.fromObject(poi);
+		String latitude = (String) jsonObject.get("latitude");
+		String longitude = (String) jsonObject.get("longitude");
+
+		LNG = Double.parseDouble(longitude);
+		LAT = Double.parseDouble(latitude);
+		double[] Coordinate = new double[2];
+		Coordinate = Coordinate_Transformation.BLToGauss(LNG, LAT);
+
+		double X = Coordinate[0];
+		double Y = Coordinate[1];
+
+		int row = (int) Math.ceil((X - X_MIN) / resolution); // (X_MAX - X) / resolution
+																
+		int col = (int) Math.ceil((Y - Y_MIN) / resolution);
+		int index = (col + cols * (row - 1)); // index=(row-1)*cols+col 依据行列数算出某行某列对应的编码
+												
+		code = codes.get(index + 1).code; // 由于codes中的第0个数的编码为1，故所有的index需要加1
+
+		// 以中央子午线的投影为纵坐标轴x，规定x轴向北为正；以赤道的投影为横坐标轴y，规定y轴向东为正。
+		return code;
 	}
 
 	public static ArrayList<DataPoint> dataPoints = new ArrayList<DataPoint>();
@@ -78,65 +162,22 @@ public class GridLayoutLines extends JFrame {
 		return sum / size;
 
 	}
-	public static Double X_MAX=2.0542041271351546E7;
-	public static Double X_MIN = 2.036373920422157E7;
-	public static Double Y_MAX = 4547353.496401368;
-	public static Double Y_MIN = 4368434.982578722;
-	public static int rows;
-	public static int cols;
+
 	/**
-	 * 给每个网格设置编码
+	 * 将每一条记录放入动态数组dataPoints中
 	 */
-    public static void setCode(){
-    	/* 将北京的东北角和西南角的坐标转换成平面坐标
-		 * BLToGauss(117.500126,41.059244)
-		 * BLToGauss(115.417284,39.438283)
-		 * BLToGauss: 2.0542041271351546E7 4547353.496401368 
-		 * BLToGauss: 2.036373920422157E7 4368434.982578722
-		 * 两点之间的距离是:252593.47127613405
-		 * 178302.06712997705 178918.51382264588
-		 * 
-		 */
-
-		rows = (int) Math.ceil((X_MAX - X_MIN) / 1000);
-		cols = (int) Math.ceil((Y_MAX - Y_MIN) / 1000);
-		
-		// System.out.print("d_x:"+rows+"\r\n"+"d_y:"+cols+"\r\n");
-
-		// 创建栅格编码
-		int mm = 1;
-		for (int rr = rows; rr >= 1; rr--) {
-			for (int cc = 1; cc <= cols; cc++) {
-				Code c = new Code();
-				c.setRow(rr);
-				c.setCol(cc);
-				c.setCode(mm);
-				mm++;
-				addCode(c);
-				// System.out.println(c.getCode(rr, cc));
-			}
-		}
-		// for(int k=0;k<codes.size();k++){
-		// System.out.print("codes的第"+k+"个数是:"+codes.get(k).row+","+codes.get(k).col+","+codes.get(k).code+"\r\n");
-
-		// }
-    	
-    }
-    /**
-     * 将每一条记录放入动态数组dataPoints中
-     */
-    //setDataPoint("D:/Test/41403-poi.txt");
-    public static void setDataPoint(String folder){
-    	String poi = "";
+	// setDataPoint("D:/Test/41403-poi.txt");
+	public static void setDataPoint(String folder) {
+		String poi = "";
 		double[] Coordinate = new double[2];
 		Vector<String> fang = FileTool.Load(folder, "UTF-8");
 		try {
 			for (int m = 0; m < fang.size(); m++) {
 				poi = fang.elementAt(m);
 
-				if (poi.indexOf("<coordinate>") != -1) {
+				if (poi.indexOf("<Coordinate>") != -1) {
 
-					COORDINATE = Tool.getStrByKey(poi, "<coordinate>", "</coordinate>","</coordinate>");
+					COORDINATE = Tool.getStrByKey(poi, "<Coordinate>", "</Coordinate>", "</Coordinate>");
 					if (COORDINATE != null) {
 						String[] coordinate = COORDINATE.split(";");
 						LNG = Double.parseDouble(coordinate[0]);
@@ -147,14 +188,13 @@ public class GridLayoutLines extends JFrame {
 
 					}
 					if (poi.indexOf("<PRICE>") != -1) {
-						PRICE = Double.parseDouble(Tool.getStrByKey(poi, "<PRICE>", "</PRICE>", "</PRICE>").replace("元/月", "")
-								.replace("[面议]", "").replace("[押一付三]", ""));
+						PRICE = Double.parseDouble(Tool.getStrByKey(poi, "<PRICE>", "</PRICE>", "</PRICE>")
+								.replace("元/月", "").replace("[面议]", "").replace("[押一付三]", ""));
 					} else {
 						PRICE = 0.0;
 					}
-					if (poi.indexOf("<LOCATION>") != -1) {
-						ADDRESS = Tool.getStrByKey(poi, "<LOCATION>", "</LOCATION>", "</LOCATION>").replace("元/月", "").replace("[面议]", "")
-								.replace("[押一付三]", "");
+					if (poi.indexOf("<ADDRESS>") != -1) {
+						ADDRESS = Tool.getStrByKey(poi, "<ADDRESS>", "</ADDRESS>", "</ADDRESS>");
 					} else {
 						ADDRESS = "未知";
 					}
@@ -172,32 +212,33 @@ public class GridLayoutLines extends JFrame {
 			System.out.println(poi);
 			System.out.println(e.getMessage());
 		}
-    }
-    
+	}
 
-    /**
-     * 计算出dataPoints中每条记录所在的网格,并将价格存于网格
-     * @param datafolder  待处理的数据
-     * @param resolution  网格分辨率
-     */
-    //DataGrid("D:/Test/41403-poi.txt",2000);
-	public static void DataGrid(String datafolder,int resolution) {
-		
+	/**
+	 * 计算出dataPoints中每条记录所在的网格,并将价格存于网格
+	 * 
+	 * @param datafolder
+	 *            待处理的数据
+	 * @param resolution
+	 *            网格分辨率
+	 */
+	// DataGrid("D:/Test/41403-poi.txt",2000);
+	public static void DataGrid(String datafolder, int resolution) {
+
 		setDataPoint(datafolder);
-		
+
 		// System.out.print("dataPoints的大小是:"+n+"\r\n");
 		// for(int k=0;k<n;k++){
 		// System.out.print("dataPoints的第"+k+"个数是:"+dataPoints.get(k).y+","+dataPoints.get(k).x+"\r\n");
 
 		// }
-		
-		
+
 		// 计算每个点所在的行列号以及编码,存储于动态数组 price
 		try {
 			int row = 0;
 			int col = 0;
 			int tt = 0;
-               
+
 			int size = dataPoints.size();
 			for (int k = 0; k < size; k++) {
 				row = (int) Math.ceil((X_MAX - dataPoints.get(k).x) / resolution);
@@ -206,16 +247,17 @@ public class GridLayoutLines extends JFrame {
 					row += 1;
 				if (col == 0)
 					col += 1;
-				
-				int index=(col+cols*(row-1)-1);
-				int code=codes.get(index).code;
-				double price=dataPoints.get(k).data;
+
+				int index = (col + cols * (row - 1) - 1);
+				int code = codes.get(index).code;
+				double price = dataPoints.get(k).data;
 				String address = dataPoints.get(k).address;
-				
-				System.out.print("dataPoints的第"+k+"个数所在的行列号是:"+row+"行"+col+"列"+"编码是"+code+"价格是"+price+"\r\n");
+
+				System.out.print("dataPoints的第" + k + "个数所在的行列号是:" + row + "行" + col + "列" + "编码是" + code + "价格是"
+						+ price + "\r\n");
 				Price pr = new Price();
 				pr.setCode(code);
-				pr.setPrice(price);				
+				pr.setPrice(price);
 				pr.setAddress(address);
 				String poi1 = dataPoints.get(k).poi;
 				pr.setPois(poi1);
@@ -226,7 +268,7 @@ public class GridLayoutLines extends JFrame {
 			System.out.println(e.getMessage()); // 抛出异常的是位于行列线上的点
 
 		}
-		
+
 		/**
 		 * 此处是为了找出某个网格的所有记录
 		 */
@@ -234,12 +276,12 @@ public class GridLayoutLines extends JFrame {
 			// System.out.println((int)price.get(ii).code+":"+price.get(ii).price_vet+price.get(ii).address_vet);
 			// System.out.println(getGridValue(ii));
 
-			if ((int) price.get(ii).code == 41403) {
+			if ((int) price.get(ii).code == 3946) {
 				System.out.println(price.get(ii).pois.size());
 				System.out.println(price.get(ii).price_vet.size());
 				for (int a = 0; a < price.get(ii).pois.size(); a++) {
 					// System.out.println(price.get(ii).pois.elementAt(a));
-					FileTool.Dump(price.get(ii).pois.elementAt(a), "D:/Test/41403-poi.txt", "utf-8");
+					FileTool.Dump(price.get(ii).pois.elementAt(a), "D:/Test/3946-poi.txt", "utf-8");
 					// System.out.println(price.get(ii).price_vet.elementAt(a));
 				}
 				for (int a = 0; a < price.get(ii).price_vet.size(); a++) {
@@ -249,7 +291,7 @@ public class GridLayoutLines extends JFrame {
 					// System.out.println(price.get(ii).price_vet.elementAt(a));
 				}
 
-				FileTool.Dump((int) price.get(ii).code + ":" + price.get(ii).price_vet, "D:/Test/41403-price.txt",
+				FileTool.Dump((int) price.get(ii).code + ":" + price.get(ii).price_vet, "D:/Test/3946-price.txt",
 						"utf-8");
 			}
 
@@ -259,6 +301,7 @@ public class GridLayoutLines extends JFrame {
 
 	/**
 	 * 将网格可视化出来
+	 * 
 	 * @param rows
 	 * @param cols
 	 * @param hgap
