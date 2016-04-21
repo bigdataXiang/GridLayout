@@ -2,6 +2,8 @@ package com.svail.gridprocess;
 
 import java.awt.*;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Scanner;
 import java.util.Vector;
 
@@ -34,6 +36,10 @@ public class GridLayoutLines extends JFrame {
 	public static void main(String[] args) throws IOException {
 
 		setCode();
+		// addCode("D:/Crawldata_BeiJing/5i5j/rentout/source/woaiwojia_rentout0108_result.txt-Json.txt");
+		codeStatistic("D:/Crawldata_BeiJing/5i5j/rentout/1000/woaiwojia_rentout1222_result-Json-1000.txt");
+
+		
 
 		/*
 		 * DataGrid(
@@ -43,6 +49,91 @@ public class GridLayoutLines extends JFrame {
 		 * frame.pack(); frame.setLocationRelativeTo(null);
 		 * frame.setVisible(true);
 		 */
+	}
+
+
+	/**
+	 * 统计每个网格编码所含有房源的数目
+	 * 
+	 * @param file
+	 */
+	public static void codeStatistic(String file) {
+		Vector<String> pois = FileTool.Load(file, "utf-8");
+		Map<Integer, Integer> Codes = new HashMap<Integer, Integer>();
+		String poi = "";
+
+		for (int k = 0; k < codes.size(); k++) {
+			int Code = codes.get(k).code;
+			Codes.put(Code, 0);
+
+		}
+		int i=0;
+		try {
+
+			for (i=0; i < pois.size(); i++) {
+				poi = pois.elementAt(i);
+				JSONObject jsonObject = JSONObject.fromObject(poi);
+				Object code = jsonObject.get("code");
+				String codestr = code.toString();
+				int codeint = Integer.parseInt(codestr);
+
+				int value = Codes.get(codeint);
+				value++;
+				Codes.put(codeint, value);
+
+			}
+		} catch (net.sf.json.JSONException e) {
+            System.out.println(e.getCause());
+            System.out.println(e.getMessage());
+            System.out.println(i+":"+poi);
+            FileTool.Dump(poi, file.replace(".txt", "")+"-exception.txt", "utf-8");
+		}
+       
+		int count = 0;
+		String[] codes=new String[Codes.size()];
+		int[] counts=new int[Codes.size()];
+		
+		for (Map.Entry<Integer, Integer> entry : Codes.entrySet()) {
+			
+			if(entry.getValue()!=0){
+				//System.out.println(entry.getKey() + " : " + entry.getValue());	
+				counts[count]=entry.getValue();
+				codes[count]=entry.getKey() + " : " + entry.getValue();
+				count++;
+				
+			}	
+		}
+		
+		Tool.InsertSortArray(codes.length, counts,codes);
+		for (int m = 0; m < codes.length; m++) {
+			if(codes[m]!=null){
+				System.out.println(codes[m]);
+				FileTool.Dump(codes[m], file.replace(".txt", "")+"-codecount1.txt", "utf-8");
+			}
+			
+		}
+
+	}
+
+	/**
+	 * 根据每条记录的经纬度计算其所在的网格编码
+	 * 
+	 * @param file
+	 */
+	public static void addCode(String file) {
+		Vector<String> pois = FileTool.Load(file, "utf-8");
+		String poi = "";
+		for (int i = 0; i < pois.size(); i++) {
+			poi = pois.elementAt(i);
+			JSONObject jsonObject = JSONObject.fromObject(poi);
+
+			int code = setPoiCode(poi, 1000);
+			jsonObject.put("code", code);
+
+			String str = jsonObject.toString().replace("\\", "").replace("\"\"", "\"");
+			System.out.println(str);
+			FileTool.Dump(str, file.replace(".txt", "") + "-1000.txt", "utf-8");
+		}
 	}
 
 	/**
@@ -106,11 +197,13 @@ public class GridLayoutLines extends JFrame {
 		double X = Coordinate[0];
 		double Y = Coordinate[1];
 
-		int row = (int) Math.ceil((X - X_MIN) / resolution); // (X_MAX - X) / resolution
-																
+		int row = (int) Math.ceil((X - X_MIN) / resolution); // (X_MAX - X) /
+																// resolution
+
 		int col = (int) Math.ceil((Y - Y_MIN) / resolution);
-		int index = (col + cols * (row - 1)); // index=(row-1)*cols+col 依据行列数算出某行某列对应的编码
-												
+		int index = (col + cols * (row - 1)); // index=(row-1)*cols+col
+												// 依据行列数算出某行某列对应的编码
+
 		code = codes.get(index + 1).code; // 由于codes中的第0个数的编码为1，故所有的index需要加1
 
 		// 以中央子午线的投影为纵坐标轴x，规定x轴向北为正；以赤道的投影为横坐标轴y，规定y轴向东为正。
