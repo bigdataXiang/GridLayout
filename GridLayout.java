@@ -36,8 +36,8 @@ public class GridLayoutLines extends JFrame {
 	public static void main(String[] args) throws IOException {
 
 		setCode();
-		// addCode("D:/Crawldata_BeiJing/5i5j/rentout/source/woaiwojia_rentout0108_result.txt-Json.txt");
-		codeStatistic("D:/Crawldata_BeiJing/5i5j/rentout/1000/woaiwojia_rentout1222_result-Json-1000.txt");
+		//addCode("D:/Crawldata_BeiJing/anjuke/rentout/0326/anjuke_rentout1231_result.txt-Json.txt");
+		codeStatistic("D:/Crawldata_BeiJing/anjuke/rentout/0326/anjuke_rentout1231_result-Json-1000.txt");
 
 		
 
@@ -108,7 +108,7 @@ public class GridLayoutLines extends JFrame {
 		for (int m = 0; m < codes.length; m++) {
 			if(codes[m]!=null){
 				System.out.println(codes[m]);
-				FileTool.Dump(codes[m], file.replace(".txt", "")+"-codecount1.txt", "utf-8");
+				FileTool.Dump(codes[m], file.replace(".txt", "")+"-codecount.txt", "utf-8");
 			}
 			
 		}
