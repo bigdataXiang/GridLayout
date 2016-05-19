@@ -105,7 +105,13 @@ public class GridLayoutLines extends JFrame {
 		// codeStatistic("D:/Crawldata_BeiJing/5i5j/resold/source/woaiwojia_resold1231_result-Json-1000.txt");
 		 
 		//第四步：选取特定的code进行价格时序分析
-		// getCode("D:/Crawldata_BeiJing/5i5j/resold/source/woaiwojia_resold1231_result-Json-1000.txt",15463);
+		 
+		 /* 
+		 for(int i=0;i<DATE.length;i++){
+			 getCode("D:/Crawldata_BeiJing/5i5j/resold/source/woaiwojia_resold"+DATE[i]+"_result-Json-1000.txt",15275);
+		 }
+		*/
+		
 		 
 		//第五步：以某一网格为例，获取每个时间段网格的房屋均价，存于unitprice文件中
 		 getTimeSeriesPrice();
@@ -114,22 +120,22 @@ public class GridLayoutLines extends JFrame {
 	public static String[] DATE={"1125","1201","1207","1214","1222","1231","0108","0119","0127","0219","0227","0309","0314"};
 	public static void getTimeSeriesPrice(){
 		String[] url={
-                 "woaiwojia_resold1125_result-Json-1000-15463.txt",
-				 "woaiwojia_resold1201_result-Json-1000-15463.txt",
-				 "woaiwojia_resold1207_result-Json-1000-15463.txt",
-				 "woaiwojia_resold1214_result-Json-1000-15463.txt",
-				 "woaiwojia_resold1222_result-Json-1000-15463.txt",
-				 "woaiwojia_resold1231_result-Json-1000-15463.txt",
-				 "woaiwojia_resold0108_result-Json-1000-15463.txt",
-				 "woaiwojia_resold0119_result-Json-1000-15463.txt",
-				 "woaiwojia_resold0127_result-Json-1000-15463.txt",
-				 "woaiwojia_resold0219_result-Json-1000-15463.txt",
-				 "woaiwojia_resold0227_result-Json-1000-15463.txt",
-				 "woaiwojia_resold0309_result-Json-1000-15463.txt",
-				 "woaiwojia_resold0314_result-Json-1000-15463.txt"
+                 "woaiwojia_resold1125_result-Json-1000-15457.txt",
+				 "woaiwojia_resold1201_result-Json-1000-15443.txt",
+				 "woaiwojia_resold1207_result-Json-1000-15443.txt",
+				 "woaiwojia_resold1214_result-Json-1000-15443.txt",
+				 "woaiwojia_resold1222_result-Json-1000-15443.txt",
+				 "woaiwojia_resold1231_result-Json-1000-15443.txt",
+				 "woaiwojia_resold0108_result-Json-1000-15443.txt",
+				 "woaiwojia_resold0119_result-Json-1000-15443.txt",
+				 "woaiwojia_resold0127_result-Json-1000-15443.txt",
+				 "woaiwojia_resold0219_result-Json-1000-15443.txt",
+				 "woaiwojia_resold0227_result-Json-1000-15443.txt",
+				 "woaiwojia_resold0309_result-Json-1000-15443.txt",
+				 "woaiwojia_resold0314_result-Json-1000-15443.txt"
 				 };
-			for(int i=0;i<url.length;i++){
-				getPrice("D:/Crawldata_BeiJing/5i5j/resold/source/"+url[i]);
+			for(int i=0;i<DATE.length;i++){
+				getPrice("D:/Crawldata_BeiJing/5i5j/resold/source/woaiwojia_resold"+DATE[i]+"_result-Json-1000-15275.txt");
 				
 				//getCode("D:/Crawldata_BeiJing/5i5j/rentout/1000/15446/"+url[i]);
 				System.out.println("完成第"+i+"个文件的处理");
@@ -175,7 +181,7 @@ public class GridLayoutLines extends JFrame {
 			}			
 			average=total/pricecounts;
 			System.out.println(average);
-			FileTool.Dump(String.valueOf(average), "D:/Crawldata_BeiJing/5i5j/resold/source/unitprice.txt", "utf-8");
+			FileTool.Dump(String.valueOf(average), "D:/Crawldata_BeiJing/5i5j/resold/source/unitprice-15275.txt", "utf-8");
 
 		}catch(net.sf.json.JSONException e){
 			FileTool.Dump(poi, file.replace(".txt", "") + "-exception.txt", "utf-8");
