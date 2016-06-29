@@ -4,7 +4,6 @@ import java.awt.*;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Scanner;
 import java.util.Vector;
 
 import javax.swing.*;
@@ -27,9 +26,7 @@ import com.svail.util.Tool;
 import net.sf.json.JSONException;
 import net.sf.json.JSONObject;
 
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
 
 public class GridLayoutLines extends JFrame {
 	public static String longitude;
@@ -135,7 +132,7 @@ public class GridLayoutLines extends JFrame {
 				 "woaiwojia_resold0314_result-Json-1000-15443.txt"
 				 };
 			for(int i=0;i<DATE.length;i++){
-				getPrice("D:/Crawldata_BeiJing/5i5j/resold/source/woaiwojia_resold"+DATE[i]+"_result-Json-1000-15275.txt");
+				getPrice("D:/Crawldata_BeiJing/5i5j/resold/source/woaiwojia_resold"+DATE[i]+"_result-Json-1000-15275.txt");//F3是跳到该函数中
 				
 				//getCode("D:/Crawldata_BeiJing/5i5j/rentout/1000/15446/"+url[i]);
 				System.out.println("完成第"+i+"个文件的处理");
